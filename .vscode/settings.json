@@ -1,0 +1,8 @@
+{
+    "python.pythonPath": "/home/metmirr/.local/share/virtualenvs/exch-api-zJVh8F5-/bin/python",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "79"
+    ]
+}
