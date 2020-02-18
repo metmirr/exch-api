@@ -23,5 +23,9 @@ def rate(request):
         for d in resp.json():
             if d[code_lookup_key] == code:
                 rates.append(d[rate_lookup_key])
+    if not rates:
+        return JsonResponse(
+            {"error": "Currency code could not found"}, status=404
+        )
 
     return JsonResponse(min(rates), safe=False)
