@@ -1,7 +1,7 @@
-from django.conf import settings
 from django.http import JsonResponse
 from django.core.cache import cache
-import requests
+
+from .models import CurrencyRate
 
 
 def rate(request):
@@ -16,21 +16,13 @@ def rate(request):
     if from_cache is not None:
         return JsonResponse(from_cache, safe=False)
 
-    rates = []
-    for provider in settings.PROVIDERS:
-        resp = requests.get(provider["url"])
-
-        code_lookup_key = provider["code"]
-        rate_lookup_key = provider["rate"]
-
-        for d in resp.json():
-            if d[code_lookup_key] == code:
-                rates.append(d[rate_lookup_key])
-
-    if not rates:
+    cheapest = CurrencyRate.get_rates(code)
+    if cheapest is None:
         return JsonResponse(
             {"error": "Currency code could not found"}, status=404
         )
+    return JsonResponse(cheapest, safe=False)
+
 
     cheapest = min(rates)
     cache.set(code, cheapest, 10)
