@@ -1,7 +1,6 @@
-from collections import namedtuple
-
 from django.conf import settings
 from django.http import JsonResponse
+from django.core.cache import cache
 import requests
 
 
@@ -13,6 +12,10 @@ def rate(request):
         )
     code = code.lower()
 
+    from_cache = cache.get(code)
+    if from_cache is not None:
+        return JsonResponse(from_cache, safe=False)
+
     rates = []
     for provider in settings.PROVIDERS:
         resp = requests.get(provider["url"])
@@ -23,9 +26,12 @@ def rate(request):
         for d in resp.json():
             if d[code_lookup_key] == code:
                 rates.append(d[rate_lookup_key])
+
     if not rates:
         return JsonResponse(
             {"error": "Currency code could not found"}, status=404
         )
 
-    return JsonResponse(min(rates), safe=False)
+    cheapest = min(rates)
+    cache.set(code, cheapest, 10)
+    return JsonResponse(cheapest, safe=False)
