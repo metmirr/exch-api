@@ -16,7 +16,7 @@ def rate(request):
     if from_cache is not None:
         return JsonResponse(from_cache, safe=False)
 
-    cheapest = CurrencyRate.get_rates(code)
+    cheapest = CurrencyRate.get_cheapest_rate(code)
     if cheapest is None:
         return JsonResponse(
             {"error": "Currency code could not found"}, status=404
