@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.cache import cache
+from django.conf import settings
 
 from .models import CurrencyRate
 
@@ -46,4 +47,15 @@ class TestCurrencyRateAPI(TestCase):
     def test_best_available_rate(self):
         resp = self.client.get("/api/bar?code=USD")
         self.assertEqual(200, resp.status_code)
+
+
+class TestProviders(TestCase):
+    def test_providers(self):
+        self.assertEqual(3, len(settings.PROVIDERS))
+
+        settings.PROVIDERS.pop()
+        self.assertEqual(2, len(settings.PROVIDERS))
+
+        first_provider = settings.PROVIDERS[0]
+        self.assertTrue(first_provider["url"])
 
