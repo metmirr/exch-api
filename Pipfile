@@ -9,6 +9,8 @@ black = "*"
 [packages]
 django = "*"
 requests = "*"
+gunicorn = "*"
+django-redis = "*"
 
 [requires]
 python_version = "3.8"
