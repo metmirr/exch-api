@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  exchange_api:
+    restart: always
+    build: ./exchange_api
+    ports:
+      - "8000:8000"
+    links:
+      - redis:redis
+    command: gunicorn -w 2 -b :8000 exchange_api.wsgi:application
+  
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - "6379:6379"
