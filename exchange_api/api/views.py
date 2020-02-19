@@ -24,6 +24,16 @@ def rate(request):
     return JsonResponse(cheapest, safe=False)
 
 
-    cheapest = min(rates)
-    cache.set(code, cheapest, 10)
-    return JsonResponse(cheapest, safe=False)
+def best_available_rate(request):
+    code = request.GET.get("code")
+    if code is None:
+        return JsonResponse(
+            {"error": "Please provide a currency code"}, status=400
+        )
+    code = code.lower()
+    bar = CurrencyRate.get_best_available_rate(code)
+    if bar is None:
+        return JsonResponse(
+            {"error": "Currency code could not found"}, status=404
+        )
+    return JsonResponse(bar, safe=False)

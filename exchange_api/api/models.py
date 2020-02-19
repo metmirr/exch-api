@@ -42,4 +42,13 @@ class CurrencyRate(object):
         cls.set_best_available_rate(code, cheapest)
         return cheapest
 
-        return cheapest
+    @classmethod
+    def get_best_available_rate(cls, code):
+        """Returns best available rate for the given currency code"""
+
+        bar_cache_lookup_key = code + "_bar"  # Best available rate (BAR)
+        best_available_rate = cache.get(bar_cache_lookup_key)
+
+        if best_available_rate is None:
+            return cls.get_cheapest_rate(code)
+        return best_available_rate
